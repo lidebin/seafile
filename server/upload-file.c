@@ -362,6 +362,10 @@ upload_api_cb(evhtp_request_t *req, void *arg)
     char *filenames_json, *tmp_files_json;
     int replace = 0;
 
+    evhtp_headers_add_header (
+        req->headers_out,
+        evhtp_header_new("Content-Type", "application/json; charset=utf-8", 1, 1));
+
     /* After upload_headers_cb() returns an error, libevhtp may still
      * receive data from the web browser and call into this cb.
      * In this case fsm will be NULL.
@@ -484,6 +488,10 @@ upload_blks_api_cb(evhtp_request_t *req, void *arg)
     char *blockids_json, *tmp_files_json;
     gint64 file_size = -1;
     int replace = 0;
+
+    evhtp_headers_add_header (
+        req->headers_out,
+        evhtp_header_new("Content-Type", "application/json; charset=utf-8", 1, 1));
 
     /* After upload_headers_cb() returns an error, libevhtp may still
      * receive data from the web browser and call into this cb.
@@ -926,6 +934,10 @@ update_api_cb(evhtp_request_t *req, void *arg)
     int error_code = ERROR_INTERNAL;
     char *new_file_id = NULL;
 
+    evhtp_headers_add_header (
+        req->headers_out,
+        evhtp_header_new("Content-Type", "application/json; charset=utf-8", 1, 1));
+
     if (!fsm || fsm->state == RECV_ERROR)
         return;
 
@@ -1035,6 +1047,10 @@ update_blks_api_cb(evhtp_request_t *req, void *arg)
     char *new_file_id = NULL;
     char *blockids_json, *tmp_files_json;
     gint64 file_size = -1;
+
+    evhtp_headers_add_header (
+        req->headers_out,
+        evhtp_header_new("Content-Type", "application/json; charset=utf-8", 1, 1));
 
     if (!fsm || fsm->state == RECV_ERROR)
         return;
