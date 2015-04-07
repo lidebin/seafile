@@ -127,7 +127,8 @@ seaf_web_at_manager_get_access_token (SeafWebAccessTokenManager *mgr,
                                       const char *repo_id,
                                       const char *obj_id,
                                       const char *op,
-                                      const char *username)
+                                      const char *username,
+                                      int use_onetime)
 {
     GString *key = g_string_new (NULL);
     AccessToken *token;
@@ -144,6 +145,10 @@ seaf_web_at_manager_get_access_token (SeafWebAccessTokenManager *mgr,
      */
     if (!token || token->expire_time - now <= 60) {
         t = gen_new_token (mgr->access_token_hash);
+        if (use_onetime) {
+            g_string_free (key, TRUE);
+            return t;
+        }
         expire = now + TOKEN_EXPIRE_TIME;
 
         token = g_new0 (AccessToken, 1);
@@ -162,6 +167,13 @@ seaf_web_at_manager_get_access_token (SeafWebAccessTokenManager *mgr,
         g_hash_table_insert (mgr->access_token_hash, g_strdup(t), info);
 
         g_free (t);
+    } else if (use_onetime) {
+        char *token_dup = g_strdup (token->token);
+        g_hash_table_remove (mgr->access_info_hash, key->str);
+        g_hash_table_remove (mgr->access_token_hash, token->token);
+        g_string_free (key, TRUE);
+
+        return token_dup;
     }
 
     g_string_free (key, TRUE);
